@@ -12,10 +12,12 @@ using namespace std;
 
 void traverseDir(PCTSTR dir, PCTSTR );
 void log(PCTSTR e, ...);
+BOOL printStrings(PCTSTR, ...);
+BOOL printMsg(HANDLE, const TCHAR*);
 int main(int argc, char *argv[])
 {
 	//GetCurrentDirectory();
-	traverseDir(TEXT("E:\\liubo\\工作相关"), TEXT("  "));
+	traverseDir(TEXT("D:\\上一个桌面"), TEXT("  "));
 	system("pause");
 	return 0;
 }
@@ -51,7 +53,7 @@ void traverseDir(PCTSTR dir, PCTSTR pad)
 				break;
 			default:
 				//查到的是文件
-				log(pade, dire, TEXT("\\"), data.cFileName);
+				printStrings(pade, dir, TEXT("\\"), data.cFileName, TEXT("\r\n"), NULL);
 				break;
 		}
 	}while(FindNextFile(hTraverse, &data));
@@ -59,12 +61,37 @@ void traverseDir(PCTSTR dir, PCTSTR pad)
 
 void log(PCTSTR e, ...)
 {
-	TCHAR chMsg[MAX_PATH];
-	va_list pArg;
+	//TCHAR chMsg[MAX_PATH];
+	//va_list pArg;
 	
-	va_start(pArg, e);
-	wsprintf(chMsg, e, pArg);	//将参数列表pArg作为字符串衔接到后面
-	va_end(pArg);
+	//va_start(pArg, e);
+	//wsprintf(chMsg, e, pArg);	//将参数列表pArg作为字符串衔接到后面
+	//va_end(pArg);
 
-	cout<<chMsg<<endl;
+	//cout<<chMsg<<endl;
+	
+	
+}
+
+///将信息传到console控制台
+BOOL printStrings(PCTSTR e, ...){
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleMode(hOut, ENABLE_PROCESSED_OUTPUT);
+	DWORD MsgLen, count;
+	PCTSTR pMsg;
+	va_list pMsgList;
+	va_start(pMsgList, e);
+	while((pMsg = va_arg(pMsgList, PCTSTR)) != NULL){
+		MsgLen = _tcslen(pMsg);
+		if(!WriteConsole(hOut, pMsg, MsgLen, &count, NULL)
+			&& !WriteFile(hOut, pMsg, MsgLen, &count, NULL)){
+			return FALSE;
+		}
+	}
+	va_end(pMsgList);
+	return TRUE;
+}
+BOOL printMsg(HANDLE hOut, LPCTSTR pMsg)
+{
+	return printStrings(pMsg, NULL);
 }
