@@ -12,12 +12,23 @@ using namespace std;
 
 void traverseDir(PCTSTR dir, PCTSTR );
 void log(PCTSTR e, ...);
-BOOL printStrings(PCTSTR, ...);
+BOOL printStrings(PCTSTR, ...);	//使用时，最后一个参数为NULL
 BOOL printMsg(HANDLE, const TCHAR*);
-int main(int argc, char *argv[])
+HANDLE hOut;	//<定义输出句柄，指向控制台 
+
+
+int _tmain(int argc, TCHAR *argv[])
 {
 	//GetCurrentDirectory();
-	traverseDir(TEXT("D:\\上一个桌面"), TEXT("  "));
+	if(argc != 2)
+		return 0;
+	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if(hOut == INVALID_HANDLE_VALUE 
+		&& !SetConsoleMode(hOut, ENABLE_PROCESSED_OUTPUT|ENABLE_WRAP_AT_EOL_OUTPUT))	//这种写法很漂亮，&&的规则！
+		return 0;
+	traverseDir(argv[1], TEXT(""));
+	CloseHandle(hOut);
+	
 	system("pause");
 	return 0;
 }
@@ -48,7 +59,7 @@ void traverseDir(PCTSTR dir, PCTSTR pad)
 				_tcscpy_s(dir2, MAX_PATH, dir);
 				_tcscat_s(dir2, MAX_PATH, TEXT("\\"));
 				_tcscat_s(dir2, MAX_PATH, data.cFileName);
-				log(pade, dir2, TEXT(":"));
+				printStrings(pade, dir2, TEXT(":"), TEXT("\r\n"), NULL);
 				traverseDir(dir2, pade);	//递归搜索目录
 				break;
 			default:
@@ -75,19 +86,18 @@ void log(PCTSTR e, ...)
 
 ///将信息传到console控制台
 BOOL printStrings(PCTSTR e, ...){
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleMode(hOut, ENABLE_PROCESSED_OUTPUT);
 	DWORD MsgLen, count;
 	PCTSTR pMsg;
 	va_list pMsgList;
 	va_start(pMsgList, e);
-	while((pMsg = va_arg(pMsgList, PCTSTR)) != NULL){
+	pMsg = e;
+	do{
 		MsgLen = _tcslen(pMsg);
 		if(!WriteConsole(hOut, pMsg, MsgLen, &count, NULL)
 			&& !WriteFile(hOut, pMsg, MsgLen, &count, NULL)){
 			return FALSE;
 		}
-	}
+	}while((pMsg = va_arg(pMsgList, PCTSTR)) != NULL);
 	va_end(pMsgList);
 	return TRUE;
 }
