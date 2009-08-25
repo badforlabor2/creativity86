@@ -112,3 +112,9 @@ TCHAR *getCmd(const char *key)
 	cout<<"can't find cmd:"<<key<<endl;
 	return TEXT("");
 }
+
+void exeCmd(const TCHAR *command, const TCHAR *parameter)
+{
+	ShelleExecute(NULL, TEXT("open"), command, parameter, TEXT(""), SW_SHOW);
+	//createprocess
+}
