@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\main2.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MyHashTable.cpp"
 				>
 			</File>

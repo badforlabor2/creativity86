@@ -21,29 +21,31 @@ unsigned short hash_func(const char *str, int len);
 bool putCmd(const char *key, const TCHAR *exeCmd);
 TCHAR* getCmd(const char *key);
 void initTable();
-int main()
-{
-	bool b;
-	initTable();
-	//从配置文件中读取数据，放入到table中
 
-	cout<<FNVHash("cmd")<<endl;
-	putCmd("cmd", TEXT("cmd.exe"));
-	putCmd("mat", TEXT("mat.exe"));
-	putCmd("vs2005", TEXT("vs2005.exe"));
-	putCmd("youdao", TEXT("youdao.exe"));
-	putCmd("tm", TEXT("tm.exe"));
-	putCmd("qianqian", TEXT("qianqian.exe"));
-	b = getCmd("cmd");
-	b = getCmd("mat");
-	b = getCmd("vs2005");
-	b = getCmd("youdao");
-	b = getCmd("tm");
-	b = getCmd("qianqian");
+//int main()
+//{
+//	bool b;
+//	initTable();
+//	//从配置文件中读取数据，放入到table中
+//
+//	cout<<FNVHash("cmd")<<endl;
+//	putCmd("cmd", TEXT("cmd.exe"));
+//	putCmd("mat", TEXT("mat.exe"));
+//	putCmd("vs2005", TEXT("vs2005.exe"));
+//	putCmd("youdao", TEXT("youdao.exe"));
+//	putCmd("tm", TEXT("tm.exe"));
+//	putCmd("qianqian", TEXT("qianqian.exe"));
+//	b = getCmd("cmd");
+//	b = getCmd("mat");
+//	b = getCmd("vs2005");
+//	b = getCmd("youdao");
+//	b = getCmd("tm");
+//	b = getCmd("qianqian");
+//
+//	system("pause");
+//	return 0;
+//}
 
-	system("pause");
-	return 0;
-}
 void initTable()
 {
 	for(int i=0; i<LEN; i++){
@@ -115,6 +117,6 @@ TCHAR *getCmd(const char *key)
 
 void exeCmd(const TCHAR *command, const TCHAR *parameter)
 {
-	ShelleExecute(NULL, TEXT("open"), command, parameter, TEXT(""), SW_SHOW);
+	//ShelleExecute(NULL, TEXT("open"), command, parameter, TEXT(""), SW_SHOW);
 	//createprocess
 }
