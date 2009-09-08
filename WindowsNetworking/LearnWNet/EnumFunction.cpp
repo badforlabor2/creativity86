@@ -6,6 +6,7 @@ using namespace std;
 #pragma comment(lib, "Mpr.lib");	//系统库，必须调用,WNetOpenEnum的函数要用
 
 bool enumFunction();
+bool enumFunction2();
 
 int main()
 {
@@ -43,6 +44,55 @@ bool enumFunction()
 			}
 		}
 	}while(dwResult != ERROR_NO_MORE_ITEMS);
+	WNetCloseEnum(hEnum);
+	return true;
+}
+
+bool enumFunction2()
+{
+	DWORD dwResult;
+	NETRESOURCE *Res1, *Res2, *Res3;
+	HANDLE hEnum;
+	LPVOID buf1 = new char [4096],
+		buf2 = new char [4096],
+		buf3 = new char [4096];
+	dwResult = WNetOpenEnum(RESOURCE_GLOBALNET,
+		RESOURCETYPE_ANY,
+		RESOURCEUSAGE_CONTAINER,
+		NULL,
+		&hEnum);
+	DWORD dwSize1=4096, dwCount1=-1;
+	dwResult = WNetEnumResource(hEnum, &dwCount1, buf, &dwSize1);
+	Res1 = (NETRESOURCE *)buf1;
+	for(DWORD i=0; i<dwCount1; i++, Res1++){
+		DWORD dwSize2=4096, dwCount2=-1;
+		dwResult = WNetOpenEnum(RESOURCE_GLOBALNET,
+			RESOURCETYPE_ANY,
+			RESOURCEUSAGE_CONTAINER,
+			Res,
+			&hEnum);
+		dwCount2=-1;
+		///注意，dwCount的值要为-1，dwSize2要足够大，这个函数要求这样
+		dwResult = WNetEnumResource(hEnum, &dwCount2, buf2, &dwSize2);
+		Res2 = (NETRESOURCE *)buf2;
+		for(DWORD j=0; j<dwCount2; j++, Res2++){
+			DWORD dwCount3=0xffffffff, dwSize3=4096;
+			dwResult = WNetOpenEnum(RESOURCE_GLOBALNET,
+				RESOURCETYPE_ANY,
+				RESOURCEUSAGE_CONTAINER,
+				Res2,
+				&hEnum);
+			dwResult = WNetEnumResource(hEnum, 
+				&dwCount3, buf3, &dwSize3);
+			Res3 = (NETRESOURCE *)buf3;
+			for(DWORD k=0; k<dwCount3; k++, Res3++){
+				cout<<Res3->lpRemoteName<<endl;
+			}
+		}
+	}
+	delete Res1;
+	delete Res2;
+	delete Res3;
 	WNetCloseEnum(hEnum);
 	return true;
 }
