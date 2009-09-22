@@ -196,6 +196,10 @@
 				RelativePath=".\singleton.h"
 				>
 			</File>
+			<File
+				RelativePath=".\window.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
