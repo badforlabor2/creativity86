@@ -20,8 +20,9 @@ class CCalcxywhDlg : public CDialog
 	DECLARE_DYNAMIC(CCalcxywhDlg);
 	friend class CCalcxywhDlgAutoProxy;
 public:
-	void calc(int idcEdit, int idcLabel, float radix);
-// Construction
+	void calc(const int idcEdit, const int idcLabel, const float radix);
+	void calc(const int idcEdit, const int idcLabel, const int xDepend, const int xlDepend);
+	// Construction
 public:
 	CCalcxywhDlg(CWnd* pParent = NULL);	// standard constructor
 	virtual ~CCalcxywhDlg();
@@ -41,7 +42,7 @@ public:
 protected:
 	CCalcxywhDlgAutoProxy* m_pAutoProxy;
 	HICON m_hIcon;
-
+	
 	BOOL CanExit();
 
 	// Generated message map functions
@@ -56,6 +57,8 @@ protected:
 	afx_msg void OnKillfocusEDITTop();
 	afx_msg void OnKillfocusEDITWidth();
 	afx_msg void OnKillfocusEDITHeight();
+	afx_msg void OnBUTTONClear();
+	afx_msg void OnCHECKDepend();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

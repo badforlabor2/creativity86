@@ -31,6 +31,9 @@ CCalcxywhDlg::CCalcxywhDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_pAutoProxy = NULL;
 	
+	//初始化恍┎问
+	
+	
 }
 
 CCalcxywhDlg::~CCalcxywhDlg()
@@ -59,6 +62,8 @@ BEGIN_MESSAGE_MAP(CCalcxywhDlg, CDialog)
 	ON_EN_KILLFOCUS(IDC_EDIT_Top, OnKillfocusEDITTop)
 	ON_EN_KILLFOCUS(IDC_EDIT_Width, OnKillfocusEDITWidth)
 	ON_EN_KILLFOCUS(IDC_EDIT_Height, OnKillfocusEDITHeight)
+	ON_BN_CLICKED(IDC_BUTTON_Clear, OnBUTTONClear)
+	ON_BN_CLICKED(IDC_CHECK_Depend, OnCHECKDepend)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -124,19 +129,19 @@ HCURSOR CCalcxywhDlg::OnQueryDragIcon()
 void CCalcxywhDlg::OnClose() 
 {
 	if (CanExit())
-		CDialog::OnClose();
+		CDialog::OnCancel();
 }
 
 void CCalcxywhDlg::OnOK() 
 {
-	if (CanExit())
-		CDialog::OnOK();
+// 	if (CanExit())
+// 		CDialog::OnOK();
 }
 
 void CCalcxywhDlg::OnCancel() 
 {
-	if (CanExit())
-		CDialog::OnCancel();
+//	if (CanExit())
+//		CDialog::OnCancel();
 }
 
 BOOL CCalcxywhDlg::CanExit()
@@ -181,27 +186,93 @@ void CCalcxywhDlg::calc(int idcEdit, int idcLabel, float radix)
 	_stprintf(content, "%f", result);
 	this->SetDlgItemText(idcLabel, content);
 }
+///相对坐标的
+void CCalcxywhDlg::calc(const int idcEdit, const int idcLabel, const int xDepend, const int xlDepend)
+{
+	TCHAR content [MAX_LEN];
+	int len;
+	double result;
+	float x1, xl1, x0, xl0;
+	
+	len = GetDlgItemText(idcEdit, content, MAX_LEN);
+	result = _tcstod(content, NULL);
+	x1 = float(result);
+	
+	len = GetDlgItemText(xDepend, content, MAX_LEN);
+	result = _tcstod(content, NULL);
+	x0 = float(result);
+
+	len = GetDlgItemText(xlDepend, content, MAX_LEN);
+	result = _tcstod(content, NULL);
+	xl0 = float(result);
+
+	if(xl0 == 0)
+		xl1 = 0;
+	else
+		xl1 = (x1-x0)/xl0;
+
+	_stprintf(content, "%f", xl1);
+	this->SetDlgItemText(idcLabel, content);
+}
 
 void CCalcxywhDlg::OnKillfocusEDITLeft() 
 {
 	// TODO: Add your control notification handler code here
-	calc(IDC_EDIT_Left, IDC_STATIC_Left, 1024);
+	if(IsDlgButtonChecked(IDC_CHECK_Depend)){
+		calc(IDC_EDIT_Left, IDC_STATIC_Left, IDC_EDIT_XDepend, IDC_EDIT_WDepend);	
+	}else{
+		//其实，完全可以调用calc(IDC_EDIT_Left, IDC_STATIC_Left, IDC_EDIT_XDepend, IDC_EDIT_WDepend);
+		calc(IDC_EDIT_Left, IDC_STATIC_Left, 1024);
+	}	
 }
 
 void CCalcxywhDlg::OnKillfocusEDITTop() 
 {
 	// TODO: Add your control notification handler code here
-	calc(IDC_EDIT_Top, IDC_STATIC_Top, 768);	
+	if(IsDlgButtonChecked(IDC_CHECK_Depend))
+		calc(IDC_EDIT_Top, IDC_STATIC_Top, IDC_EDIT_YDepend, IDC_EDIT_HDepend);
+	else
+		calc(IDC_EDIT_Top, IDC_STATIC_Top, 768);	
 }
 
 void CCalcxywhDlg::OnKillfocusEDITWidth() 
 {
 	// TODO: Add your control notification handler code here
-	calc(IDC_EDIT_Width, IDC_STATIC_Width, 1024);	
+	if(IsDlgButtonChecked(IDC_CHECK_Depend)){
+		calc(IDC_EDIT_Width, IDC_STATIC_Width, 0, IDC_EDIT_WDepend);	
+	}else{
+		calc(IDC_EDIT_Width, IDC_STATIC_Width, 1024);	
+	}
 }
 
 void CCalcxywhDlg::OnKillfocusEDITHeight() 
 {
 	// TODO: Add your control notification handler code here
-	calc(IDC_EDIT_Height, IDC_STATIC_Height, 768);
+	if(IsDlgButtonChecked(IDC_CHECK_Depend))
+		calc(IDC_EDIT_Height, IDC_STATIC_Height, 0, IDC_EDIT_HDepend);
+	else
+		calc(IDC_EDIT_Height, IDC_STATIC_Height, 768);
+}
+
+void CCalcxywhDlg::OnBUTTONClear() 
+{
+	// TODO: Add your control notification handler code here
+	SetDlgItemText(IDC_EDIT_Left, TEXT(""));
+	SetDlgItemText(IDC_EDIT_Top, TEXT(""));
+	SetDlgItemText(IDC_EDIT_Width, TEXT(""));
+	SetDlgItemText(IDC_EDIT_Height, TEXT(""));
+
+	SetDlgItemText(IDC_STATIC_Left, TEXT(""));
+	SetDlgItemText(IDC_STATIC_Top, TEXT(""));
+	SetDlgItemText(IDC_STATIC_Width, TEXT(""));
+	SetDlgItemText(IDC_STATIC_Height, TEXT(""));
+}
+
+void CCalcxywhDlg::OnCHECKDepend() 
+{
+	// TODO: Add your control notification handler code here
+	OnKillfocusEDITLeft();
+	OnKillfocusEDITTop();
+	OnKillfocusEDITWidth();
+	OnKillfocusEDITHeight();
 }
