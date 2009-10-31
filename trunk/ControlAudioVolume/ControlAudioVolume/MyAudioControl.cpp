@@ -25,6 +25,23 @@ void THAudioControl::closeDevice()
 		cout<<"where is your mixer?\n";
 	}
 }
+//显示所有的音频设备
+void THAudioControl::showDevices()
+{
+	MIXERLINE		line;
+	MMRESULT		ret;
+
+	for(int i=MIXERLINE_COMPONENTTYPE_SRC_FIRST; i<=MIXERLINE_COMPONENTTYPE_SRC_LAST; i++){
+		ZeroMemory(&line, sizeof(line));
+		line.cbStruct = sizeof(line);
+		line.dwComponentType = i;
+		ret = mixerGetLineInfo((HMIXEROBJ)hMixer, &line, MIXER_GETLINEINFOF_COMPONENTTYPE);
+		if(ret == MMSYSERR_NOERROR){
+			wcout<<i<<" "<<line.szName<<endl;
+		}
+	}
+}
+
 
 //获得一个line之后再获得该line的controller
 bool THAudioControl::getController()

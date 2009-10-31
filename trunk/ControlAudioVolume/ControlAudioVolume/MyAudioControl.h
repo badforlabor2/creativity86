@@ -8,6 +8,7 @@
 #include <mmsystem.h>
 #pragma comment(lib, "Winmm.lib")
 
+
 class THAudioControl
 {
 public:
@@ -22,7 +23,7 @@ public:
 		closeDevice();
 	}
 	bool getController();
-
+	void showDevices();
 private:
 	HMIXER hMixer;
 	bool openDevice();
