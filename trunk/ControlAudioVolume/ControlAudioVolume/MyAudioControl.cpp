@@ -50,7 +50,8 @@ bool THAudioControl::getController()
 	MMRESULT			rc;
 	MIXERLINECONTROLS	lineControls;
 	MIXERCONTROL		control;
-	
+	LINE_CONTROL		*controls;
+
 	ZeroMemory(&line, sizeof(line));
 	line.cbStruct = sizeof(line);
 	line.dwComponentType = MIXERLINE_COMPONENTTYPE_SRC_WAVEOUT;
@@ -59,17 +60,20 @@ bool THAudioControl::getController()
 		cout<<"can't get waveout\n";
 		return false;
 	}
+	int size = sizeof(MIXERCONTROL) * (line.cControls - 1);
+	controls = (LINE_CONTROL *)malloc(sizeof(LINE_CONTROL)+size);
+	controls->size = line.cControls;
 
 	//一个line可能有几个controller
 	ZeroMemory(&lineControls, sizeof(lineControls));
 	lineControls.cbStruct = sizeof(lineControls);
 	lineControls.dwLineID = line.dwLineID;
-	lineControls.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
-	lineControls.cControls = 1;
+	//lineControls.dwControlType = MIXERCONTROL_CONTROLTYPE_VOLUME;
+	lineControls.cControls = line.cControls;
 	lineControls.cbmxctrl = sizeof(control);
-	lineControls.pamxctrl = &control;
+	lineControls.pamxctrl = controls->control;
 	rc = mixerGetLineControls((HMIXEROBJ)hMixer, &lineControls,
-		MIXER_GETLINECONTROLSF_ONEBYTYPE);
+		MIXER_GETLINECONTROLSF_ALL);
 	if(rc != MMSYSERR_NOERROR){
 		cout<<"can't get line controllers\n";
 	}
@@ -82,7 +86,7 @@ bool THAudioControl::getController()
 	ZeroMemory(&detail, sizeof(detail));
 	detail.cbStruct = sizeof(detail);
 	detail.cbDetails = sizeof(volStruct);
-	detail.dwControlID = control.dwControlID;
+	detail.dwControlID = controls->control[0].dwControlID;
 	detail.paDetails = &volStruct;
 	detail.cChannels = 1;
 	rc = mixerGetControlDetails((HMIXEROBJ)hMixer, &detail,
@@ -92,7 +96,7 @@ bool THAudioControl::getController()
 		return false;
 	}
 	volume = volStruct.dwValue;
-	cout<<"current volume:"<<volume<<endl;
+//	cout<<"current volume:"<<volume<<endl;
 
 	volStruct.dwValue = 0;
 	rc = mixerSetControlDetails((HMIXEROBJ)hMixer, &detail,

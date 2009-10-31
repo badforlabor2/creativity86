@@ -28,4 +28,9 @@ private:
 	HMIXER hMixer;
 	bool openDevice();
 	void closeDevice();
+public:
+	typedef struct{	//Áã³¤Êý×é
+		int size;
+		MIXERCONTROL control[1];
+	} LINE_CONTROL;
 };
