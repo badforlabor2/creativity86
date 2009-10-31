@@ -90,8 +90,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	//DWORD 4×Ö½Ú
 	//WORD  2×Ö½Ú
 	THAudioControl c;
-	c.showDevices();
-
+	//c.showDevices();
+	c.getController();
 
 
 
