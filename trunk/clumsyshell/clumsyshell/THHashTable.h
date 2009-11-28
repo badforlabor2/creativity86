@@ -23,7 +23,8 @@ public:
 	}
 	void show();
 	void insert(T data);
-	bool find(T *t) const;
+	bool insertUnique(T data);
+	T	*find(T *t) const;
 	bool deleteFromEnd();
 	void deleteAll();
 	bool isEmpty(){return (first==0);}
@@ -59,7 +60,7 @@ private:
 	static const int size = 163;
 	THLink<THHashElement> table[size];
 public:
-	void addOne(const char *key, const char *keyValue);
+	bool addOne(const char *key, const char *keyValue);
 	char *getOne(const char *key) const;
 	int hash(const char *key) const;
 };
