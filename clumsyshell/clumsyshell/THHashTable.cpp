@@ -18,6 +18,29 @@ void THLink<T>::insert(T data)
 	}
 }
 template<class T>
+bool THLink<T>::insertUnique(T data)
+{
+	THLinkNode<T> *temp = new THLinkNode<T>();
+	THLinkNode<T> *curr;
+	temp->nValue = data;
+	temp->next = 0;
+	curr = first;
+	while(curr){
+		if(data == curr->nValue)
+			return false;
+		curr = curr->next;
+	}
+	if(curr == 0){
+		first = temp;
+		current = temp;
+	}else{
+		current->next = temp;
+		current = temp;
+	}
+	return true;
+
+}
+template<class T>
 void THLink<T>::show()
 {
 	THLinkNode<T> *curr;
@@ -28,18 +51,18 @@ void THLink<T>::show()
 	}
 }
 template<class T>
-bool THLink<T>::find(T *t) const
+T *THLink<T>::find(T *t) const
 {
 	THLinkNode<T> *curr;
 	curr = first;
 	while(curr){
 		// T 需要重写"=="运算符
 		if(*t == curr->nValue){
-			return true;
+			return &(curr->nValue);
 		}
 		curr = curr->next;
 	}
-	return false;
+	return 0;
 }
 template<class T>
 bool THLink<T>::deleteFromEnd()
@@ -77,7 +100,6 @@ void THLink<T>::deleteAll()
 bool THHashElement::operator == (const THHashElement e)
 {
 	if(strcmp(key, e.key) == 0){
-		strcpy(keyValue, e.keyValue);
 		return true;
 	}else 
 		return false;
@@ -86,23 +108,24 @@ bool THHashElement::operator == (const THHashElement e)
 /* THHashTable                                                                     */
 /************************************************************************/
 //key-keyValue; 这个key为字符串，keyValue为int型值
-void THHashTable::addOne(const char *key, const char *keyValue)
+bool THHashTable::addOne(const char *key, const char *keyValue)
 {
 	THHashElement e;
 	int index;
 	strcpy(e.key, key);
 	strcpy(e.keyValue, keyValue);
 	index = hash(key) % size;
-	table[index].insert(e);
+	return table[index].insertUnique(e);
 }
 char *THHashTable::getOne(const char *key) const
 {
-	THHashElement e;
+	THHashElement e, *ret;
 	int index;
 	strcpy(e.key, key);
 	index = hash(key) % size;
-	if(table[index].find(&e)){
-		return e.keyValue;
+	ret=table[index].find(&e);
+	if(ret != 0){
+		return ret->keyValue;
 	}else
 		return "";
 }
