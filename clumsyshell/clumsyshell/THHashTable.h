@@ -63,6 +63,7 @@ public:
 	bool addOne(const char *key, const char *keyValue);
 	char *getOne(const char *key) const;
 	int hash(const char *key) const;
+	bool serialize();
 };
 
 

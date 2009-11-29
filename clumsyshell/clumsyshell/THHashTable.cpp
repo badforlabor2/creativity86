@@ -112,8 +112,8 @@ bool THHashTable::addOne(const char *key, const char *keyValue)
 {
 	THHashElement e;
 	int index;
-	strcpy(e.key, key);
-	strcpy(e.keyValue, keyValue);
+	strncpy(e.key, key, sizeof(key));
+	strncpy(e.keyValue, keyValue, sizeof(key));
 	index = hash(key) % size;
 	return table[index].insertUnique(e);
 }
@@ -121,7 +121,7 @@ char *THHashTable::getOne(const char *key) const
 {
 	THHashElement e, *ret;
 	int index;
-	strcpy(e.key, key);
+	strncpy(e.key, key, strlen(key)+1);
 	index = hash(key) % size;
 	ret=table[index].find(&e);
 	if(ret != 0){
@@ -137,22 +137,27 @@ int THHashTable::hash(const char *key) const
 	}
 	return nHash%size;
 }
-
-void main()
+bool THHashTable::serialize()
 {
-	THLink<int> link;
-	char str[10];
-	link.insert(10);
-	link.insert(11);
-	link.show();
-	
-	THHashTable ht;
-	ht.addOne("liu", "liubo1");
-	ht.addOne("liu2", "liubo2");
-	ht.addOne("liu3", "liubo3");
-	ht.addOne("liu4", "liubo4");
-	strcpy(str, ht.getOne("liu3"));
-	cout<<str;
-
-	system("pause");
+//序列化是一个问题！如何才能更好的满足序列化的要求呢？扩展性必须高，这是肯定的了！	
+	return false;
 }
+
+//void main()
+//{
+//	THLink<int> link;
+//	char str[10];
+//	link.insert(10);
+//	link.insert(11);
+//	link.show();
+//
+//	THHashTable ht;
+//	ht.addOne("liu", "liubo1");
+//	ht.addOne("liu2", "liubo2");
+//	ht.addOne("liu3", "liubo3");
+//	ht.addOne("liu4", "liubo4");
+//	strcpy(str, ht.getOne("liu3"));
+//	cout<<str;
+//
+//	system("pause");
+//}
