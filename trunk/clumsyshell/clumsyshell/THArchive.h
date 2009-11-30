@@ -5,10 +5,23 @@
 #include <fstream>
 using namespace std;
 
+enum iotype
+{
+	OUTPUT,
+	INPUT,
+	NONE,
+};
 class THArchive
 {
+protected:
+	iotype type;
 public:
 	virtual void serialize(void *v, int length) = 0;
+	THArchive():type(NONE)
+	{
+	
+	}
+	//还有一种方法，由子类去实现"<<"运算符，这样或许更好
 	THArchive &operator << (int &data)
 	{
 		serialize(&data, sizeof(data));
@@ -16,25 +29,35 @@ public:
 	}
 	THArchive &operator << (char *data)
 	{
-		serialize(data, strlen(data)+1);
-		return const_cast<THArchive &>(*this);
-	}
-	//输入输出各一套
-	THArchive &operator >> (char *data)
-	{
-		while(true){
-			*data = 0;
-			serialize(&*data, sizeof(char));
-			if(*data++ == 0)
-				break;
+		if(type == OUTPUT){
+			serialize(data, strlen(data)+1);
+		}else if(type == INPUT){
+			//对于while循环最好加一个守护代码，比如i<100000，这样防止程序进入死循环
+			while(true){
+				*data = 0;
+				serialize(&*data, sizeof(char));
+				if(*data++ == 0)
+					break;
+			}
 		}
 		return const_cast<THArchive &>(*this);
 	}
-	THArchive &operator >> (int &data)
-	{
-		serialize(&data, sizeof(data));
-		return const_cast<THArchive &>(*this);
-	}
+	//输入输出各一套
+	//THArchive &operator >> (char *data)
+	//{
+	//	while(true){
+	//		*data = 0;
+	//		serialize(&*data, sizeof(char));
+	//		if(*data++ == 0)
+	//			break;
+	//	}
+	//	return const_cast<THArchive &>(*this);
+	//}
+	//THArchive &operator >> (int &data)
+	//{
+	//	serialize(&data, sizeof(data));
+	//	return const_cast<THArchive &>(*this);
+	//}
 };
 class THArchiveReader : public THArchive
 {
@@ -43,10 +66,12 @@ private:
 public:
 	THArchiveReader()
 	{
+		type = INPUT;
 	//	infile = 0;		//这里是错误的，该如何写？
 	}
 	THArchiveReader(const char *fileName)
 	{
+		this->type = INPUT;
 		infile.open(fileName);
 	}
 	bool open(const char *fileName)
@@ -73,10 +98,11 @@ private:
 public:
 	THArchiveWriter()
 	{
-	
+		type = OUTPUT;
 	}
 	THArchiveWriter(const char *fileName)
 	{
+		type = OUTPUT;
 		outfile.open(fileName);
 	}
 	bool open(const char *fileName)
@@ -106,11 +132,8 @@ public:
 	{
 		name[0] = 0;
 	}
-	void serialized(THArchive &arc, int signal = 0)
+	void serialized(THArchive &arc)
 	{
-		if(signal == 0)	
-			arc<<name<<age;
-		else
-			arc>>name>>age;
+		arc<<name<<age;
 	}
 };
