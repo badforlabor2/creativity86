@@ -1,4 +1,5 @@
 #include "THHashTable.h"
+#include "THGuard.h"
 #include <string>
 #include <iostream>
 using namespace std;
@@ -16,6 +17,7 @@ void THLink<T>::insert(T data)
 		current->next = temp;
 		current = temp;
 	}
+	size++;
 }
 template<class T>
 bool THLink<T>::insertUnique(T data)
@@ -37,6 +39,7 @@ bool THLink<T>::insertUnique(T data)
 		current->next = temp;
 		current = temp;
 	}
+	size++;
 	return true;
 
 }
@@ -74,6 +77,7 @@ bool THLink<T>::deleteFromEnd()
 		curr = 0;
 		first = 0;
 		current = 0;
+		size--;
 		return true;
 	}
 	while(curr){
@@ -81,6 +85,7 @@ bool THLink<T>::deleteFromEnd()
 			curr->next = 0;
 			delete current;
 			current = curr;
+			size--;
 			return true;
 		}
 		curr = curr->next;
@@ -95,6 +100,18 @@ void THLink<T>::deleteAll()
 		curr = first;
 		first = curr->next;
 		delete curr;
+	}
+	size=0;
+}
+template<class T>
+void THLink<T>::serialize(THArchive &arc)
+{
+	THLinkNode<T> *curr;
+	arc<<size;
+	curr = first;
+	while(curr){
+//		arc<<curr->nValue;
+		curr = curr->next;
 	}
 }
 bool THHashElement::operator == (const THHashElement e)
@@ -137,27 +154,32 @@ int THHashTable::hash(const char *key) const
 	}
 	return nHash%size;
 }
-bool THHashTable::serialize()
+bool THHashTable::serialize(THArchive &arc)
 {
 //序列化是一个问题！如何才能更好的满足序列化的要求呢？扩展性必须高，这是肯定的了！	
+	int temp = size;
+	arc<<temp;
+	for(int i=0; i<size; i++){
+		table[i].serialize(arc);
+	}
 	return false;
 }
 
-//void main()
-//{
-//	THLink<int> link;
-//	char str[10];
-//	link.insert(10);
-//	link.insert(11);
-//	link.show();
-//
-//	THHashTable ht;
-//	ht.addOne("liu", "liubo1");
-//	ht.addOne("liu2", "liubo2");
-//	ht.addOne("liu3", "liubo3");
-//	ht.addOne("liu4", "liubo4");
-//	strcpy(str, ht.getOne("liu3"));
-//	cout<<str;
-//
-//	system("pause");
+void main()
+{
+	THLink<int> link;
+	char str[10];
+	link.insert(10);
+	link.insert(11);
+	link.show();
+
+	THHashTable ht;
+	ht.addOne("liu", "liubo1");
+	ht.addOne("liu2", "liubo2");
+	ht.addOne("liu3", "liubo3");
+	ht.addOne("liu4", "liubo4");
+	strcpy(str, ht.getOne("liu3"));
+	cout<<str;
+
+	system("pause");
 //}

@@ -1,6 +1,9 @@
 /************************************************************************/
 /* 序列化接口                                                           */
 /************************************************************************/
+#ifndef THARCHIVE_H
+#define THARCHIVE_H
+
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -137,3 +140,4 @@ public:
 		arc<<name<<age;
 	}
 };
+#endif

@@ -193,7 +193,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\THGuard.h"
+				>
+			</File>
+			<File
 				RelativePath=".\THHashTable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\THShell.h"
 				>
 			</File>
 		</Filter>
