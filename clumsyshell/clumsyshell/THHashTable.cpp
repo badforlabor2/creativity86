@@ -182,4 +182,4 @@ void main()
 	cout<<str;
 
 	system("pause");
-//}
+}
