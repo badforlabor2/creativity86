@@ -15,7 +15,7 @@ struct THLinkNode
 template<class T>
 class THLink
 {
-private:
+protected:
 	THLinkNode<T> *first, *current;
 	int size;
 public:
@@ -66,11 +66,36 @@ public:
 		arc<<key<<keyValue;
 	}
 };
+class THHashLink : public THLink<THHashElement>
+{
+public:
+	void serialize(THArchive &arc)
+	{
+		THLinkNode<THHashElement> *curr;
+		if(arc.type == OUTPUT){
+			arc<<size;
+			curr = first;
+			while(curr){
+				curr->nValue.serialize(arc);
+				curr = curr->next;
+			}		
+		}else if(arc.type == INPUT){
+			int temp = 0;
+			arc<<temp;
+			for(int i=0; i<temp; i++){
+				THHashElement e;
+				e.serialize(arc);
+				insert(e);
+			}
+		}
+	}
+};
+
 class THHashTable
 {
 private:
 	static const int size = 163;
-	THLink<THHashElement> table[size];
+	THHashLink table[size];
 public:
 	bool addOne(const char *key, const char *keyValue);
 	char *getOne(const char *key) const;
