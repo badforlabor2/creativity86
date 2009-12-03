@@ -16,7 +16,7 @@ enum iotype
 };
 class THArchive
 {
-protected:
+public:
 	iotype type;
 public:
 	virtual void serialize(void *v, int length) = 0;

@@ -8,7 +8,7 @@ template<class T>
 void THLink<T>::insert(T data)
 {
 	THLinkNode<T> *temp = new THLinkNode<T>();
-	temp->nValue = data;
+	temp->nValue = data;	//如果T没有拷贝构造函数，那么就是指向的关系
 	temp->next = 0;
 	if(first == 0){
 		first = temp;
@@ -32,7 +32,7 @@ bool THLink<T>::insertUnique(T data)
 			return false;
 		curr = curr->next;
 	}
-	if(curr == 0){
+	if(first == 0){
 		first = temp;
 		current = temp;
 	}else{
@@ -129,8 +129,8 @@ bool THHashTable::addOne(const char *key, const char *keyValue)
 {
 	THHashElement e;
 	int index;
-	strncpy(e.key, key, sizeof(key));
-	strncpy(e.keyValue, keyValue, sizeof(key));
+	strncpy(e.key, key, strlen(key)+1);
+	strncpy(e.keyValue, keyValue, strlen(keyValue)+1);
 	index = hash(key) % size;
 	return table[index].insertUnique(e);
 }
@@ -174,10 +174,16 @@ void main()
 	link.show();
 
 	THHashTable ht;
-	ht.addOne("liu", "liubo1");
-	ht.addOne("liu2", "liubo2");
-	ht.addOne("liu3", "liubo3");
-	ht.addOne("liu4", "liubo4");
+	//ht.addOne("liu", "liubo1");
+	//ht.addOne("liu2", "liubo2");
+	//ht.addOne("liu3", "liubo3");
+	//ht.addOne("liu4", "liubo4");
+
+	//THArchiveWriter aw("ta");
+	//ht.serialize(aw);
+	THArchiveReader ar("ta");
+	ht.serialize(ar);
+
 	strcpy(str, ht.getOne("liu3"));
 	cout<<str;
 
