@@ -3,6 +3,8 @@
 /************************************************************************/
 #ifndef THHASHTABLE_H
 #define THHASHTABLE_H
+#include "THArchive.h"
+
 template<class T>
 struct THLinkNode
 {
@@ -15,11 +17,13 @@ class THLink
 {
 private:
 	THLinkNode<T> *first, *current;
+	int size;
 public:
 	THLink()
 	{
 		first =0;
 		current = 0;
+		size = 0;
 	}
 	void show();
 	void insert(T data);
@@ -27,6 +31,11 @@ public:
 	T	*find(T *t) const;
 	bool deleteFromEnd();
 	void deleteAll();
+	int getSize() const
+	{
+		return size;
+	}
+	void serialize(THArchive &arc);
 	bool isEmpty(){return (first==0);}
 	~THLink()
 	{
@@ -52,7 +61,10 @@ public:
 		keyValue[0] = 0;
 	}
 	bool operator == (THHashElement e);
-
+	void serialize(THArchive &arc)
+	{
+		arc<<key<<keyValue;
+	}
 };
 class THHashTable
 {
@@ -63,13 +75,6 @@ public:
 	bool addOne(const char *key, const char *keyValue);
 	char *getOne(const char *key) const;
 	int hash(const char *key) const;
-	bool serialize();
+	bool serialize(THArchive &arc);
 };
-
-
-
-
-
-
-
 #endif
