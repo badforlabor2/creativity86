@@ -32,7 +32,7 @@ public:
 	}
 	void Serialize(const TCHAR *Data)
 	{
-		static bool Entry = 0;	//用作排队
+		static bool Entry = 0;	//try...catch控制块
 		if(Entry){
 
 			//第一次的时候，建立一个日志文件LogAr
@@ -55,14 +55,25 @@ public:
 			}
 
 			if(LogAr){
+#ifdef FORCE_ANSI_LOG
 				TCHAR ch[65536] = TEXT("");
 				thStrcat(ch, TEXT("debug"));	//这里需把"debug"封装
 				thStrcat(ch, TEXT(":"));
 				thStrcat(ch, Data);
 				thStrcat(ch, LINE_TERMINATOR);
-				//这里需要把Unicode转化为ansi，因为Archive不一定将数据作为Unicode类型输出
-				//序列化的时候肯定要一个字节一个字节的来
-				LogAr->Serialize(ch, thStrlen(ch));
+				ANSICHAR ACh[65536];
+				INT i;
+				//转化为ANSI形式，超过0xff的，替换成默认值
+				for( i=0; ch[i]; i++ )
+					ACh[i] = ToAnsi(ch[i] );
+				ACh[i] = 0;
+				LogAr->Serialize(ACh, i);
+#else
+				WriteRaw(TEXT("debug"));
+				WriteRaw(TEXT(": "));
+				WriteRaw(Data);
+				WriteRaw(LINE_TERMINATOR);
+#endif
 			}
 		}else{
 			Entry = 1;

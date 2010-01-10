@@ -484,4 +484,15 @@ $memcpy_final:
 	}
 #endif
 
+	enum {MAXSBYTE		= 0x7f       };
+
+#ifdef UNICODE
+	inline TCHAR    FromAnsi   ( ANSICHAR In ) { return (BYTE)In;                        }
+	inline TCHAR    FromUnicode( UNICHAR In  ) { return In;                              }
+	inline ANSICHAR ToAnsi     ( TCHAR In    ) { return (WORD)In<0x100 ? In : MAXSBYTE; }
+	inline UNICHAR  ToUnicode  ( TCHAR In    ) { return In; }
+#endif
+
+
+
 #endif
