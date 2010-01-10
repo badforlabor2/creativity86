@@ -11,7 +11,8 @@ int main()
 {
 	THOutputDeviceFile Log;
 	thStrcpy(Log.FileName, TEXT("Sample.txt"));
-	Log.Serialize(TEXT("abcd"));
+	Log.Serialize(TEXT("ab¡ı≤©cd"));
+	Log.Serialize(TEXT("----ab¡ı≤©cd----"));
 	Log.Flush();
 
 	system("pause");
