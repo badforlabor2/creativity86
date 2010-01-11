@@ -6,6 +6,12 @@
 class MessageBoxJunior
 {
 public:
+	//MessageBoxJunior()
+	//{
+	//	Title[0] = '\0';
+	//	WarningInfo[0] = '\0';
+	//	WaitTime = 0;
+	//}
 	MessageBoxJunior(TCHAR *title, TCHAR *warnInfo, int waitTime)
 	{
 		if(_tcslen(title) > 511)
@@ -18,7 +24,7 @@ public:
 	}
 	void Show(HINSTANCE hInstance, HWND parent)
 	{
-		::DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), parent, (DLGPROC)DlgProc);
+		::DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), parent, (DLGPROC)DlgProc, (LPARAM)this);
 	}
 	static void CALLBACK OnTimer(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
@@ -29,12 +35,16 @@ public:
 	{
 		switch(msg){
 			case WM_INITDIALOG:
-				::SetTimer(hwnd, 0, WaitTime * 1000, (TIMERPROC)OnTimer);
-				::SetWindowText(hwnd, Title);
-				::SetDlgItemText(hwnd, -1, WarningInfo);
+			{
+				MessageBoxJunior *msgBox = (MessageBoxJunior *)lParam;
+				msgBox->hSelf = hwnd;
+				::SetTimer(hwnd, 0, msgBox->WaitTime * 1000, (TIMERPROC)OnTimer);
+				::SetWindowText(hwnd, msgBox->Title);
+				::SetDlgItemText(hwnd, -1, msgBox->WarningInfo);
 				::EnableWindow(::GetDlgItem(hwnd, IDOK), FALSE);
 				::EnableMenuItem(::GetSystemMenu(hwnd, FALSE), SC_CLOSE, MF_BYCOMMAND | MF_DISABLED);
-				break;
+				return TRUE;
+			}
 			case WM_CLOSE:
 				DestroyWindow(hwnd);
 				return TRUE;
@@ -45,9 +55,10 @@ public:
 	}
 
 private:
-	static TCHAR Title[512];
-	static TCHAR WarningInfo[512];
-	static int WaitTime;
+	TCHAR Title[512];
+	TCHAR WarningInfo[512];
+	int WaitTime;
+	HWND hSelf;
 };
 
 #endif
