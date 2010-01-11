@@ -181,10 +181,6 @@
 				RelativePath=".\main.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\MessageBoxJunior.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
