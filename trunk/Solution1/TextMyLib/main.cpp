@@ -1,5 +1,6 @@
 #include "resource.h"
 #include <windows.h>
+#include "MessageBoxJunior.h"
 #include <iostream>
 using namespace std;
 
@@ -95,14 +96,21 @@ void SetWarningByModel(IN HINSTANCE hInstance)
 }
 int main()
 {
-//INT WINAPI WinMain( IN HINSTANCE hInstance, IN HINSTANCE hPrevInstance, IN LPSTR lpCmdLine, IN int nShowCmd )
-//{
-	cout<<"abc--------------"<<endl;
+////INT WINAPI WinMain( IN HINSTANCE hInstance, IN HINSTANCE hPrevInstance, IN LPSTR lpCmdLine, IN int nShowCmd )
+////{
+//	cout<<"abc--------------"<<endl;
+//
+//	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+//	SetWarningByModel(NULL);
+////	SetWarning(TEXT("9999999999999999"), 10/*, TEXT("---title-----!!Warning!!----------")*/);
+//	cout<<"abcde"<<endl;
+//	system("pause");
+//	return 0;
+	MessageBoxJunior msgBox(TEXT("ABC"), TEXT("ABCDE"), 5);
+	msgBox.Show((HINSTANCE)GetModuleHandle(NULL), GetActiveWindow());
+	cout<<"end!"<<endl;
 
-	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
-	SetWarningByModel(NULL);
-//	SetWarning(TEXT("9999999999999999"), 10/*, TEXT("---title-----!!Warning!!----------")*/);
-	cout<<"abcde"<<endl;
-	system("pause");
+
 	return 0;
+
 }
