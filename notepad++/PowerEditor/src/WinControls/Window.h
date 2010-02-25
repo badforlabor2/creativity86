@@ -66,7 +66,7 @@ public:
 	};
 	
     virtual bool isVisible() const {
-        return bool(::IsWindowVisible(_hSelf));
+        return static_cast<bool>(::IsWindowVisible(_hSelf));
 	};
 
 	HWND getHSelf() const {
