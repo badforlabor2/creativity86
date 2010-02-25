@@ -165,27 +165,67 @@ bool THHashTable::serialize(THArchive &arc)
 	return false;
 }
 
-void main()
+//void main()
+//{
+//	THLink<int> link;
+//	char str[10];
+//	link.insert(10);
+//	link.insert(11);
+//	link.show();
+//
+//	THHashTable ht;
+//	//ht.addOne("liu", "liubo1");
+//	//ht.addOne("liu2", "liubo2");
+//	//ht.addOne("liu3", "liubo3");
+//	//ht.addOne("liu4", "liubo4");
+//
+//	//THArchiveWriter aw("ta");
+//	//ht.serialize(aw);
+//	THArchiveReader ar("ta");
+//	ht.serialize(ar);
+//
+//	strcpy(str, ht.getOne("liu3"));
+//	cout<<str;
+//
+//	system("pause");
+//}
+void fun3()
 {
-	THLink<int> link;
-	char str[10];
-	link.insert(10);
-	link.insert(11);
-	link.show();
+	guard(fun3);
+	cout<<"abc";
+	cout<<"def";
+	unguard;
+}
+void fun2()
+{
+	guard(fun2);
+	cout<<"abc";
+	cout<<"def";
+	throw 0;
+	unguard;
+}
+void fun1()
+{
+	guard(fun1);
+	fun2();
+	cout<<"123";
+	cout<<"456";
+	throw 0;
+	unguard;
+}
+int main()
+{
+	try{
+		fun3();
+		fun1();
 
-	THHashTable ht;
-	//ht.addOne("liu", "liubo1");
-	//ht.addOne("liu2", "liubo2");
-	//ht.addOne("liu3", "liubo3");
-	//ht.addOne("liu4", "liubo4");
-
-	//THArchiveWriter aw("ta");
-	//ht.serialize(aw);
-	THArchiveReader ar("ta");
-	ht.serialize(ar);
-
-	strcpy(str, ht.getOne("liu3"));
-	cout<<str;
-
-	system("pause");
+	}catch(...){
+		const char *ptr;
+		if(CSUsed()){
+			cout<<"\nException:";
+			while((ptr = CSEnumFunction())){
+				cout<<"-->"<<ptr;
+			}
+		}
+	}
 }
