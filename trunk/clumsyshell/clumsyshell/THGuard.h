@@ -36,38 +36,7 @@ const char *CSEnumFunction()
 /************************************************************************
 Р§згЃК                                                                
 
-void fun2()
-{
-	guard(fun2);
-	cout<<"abc";
-	cout<<"def";
-	throw 0;
-	unguard;
-}
-void fun1()
-{
-	guard(fun1);
-	fun2();
-	cout<<"123";
-	cout<<"456";
-	throw 0;
-	unguard;
-}
-int main()
-{
-	try{
-		fun1();
 
-	}catch(...){
-		const char *ptr;
-		if(CSUsed()){
-			cout<<"\nException:";
-			while((ptr = CSEnumFunction())){
-				cout<<"-->"<<ptr;
-			}
-		}
-	}
-}
 ************************************************************************/
 
 #endif
