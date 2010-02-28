@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="LogSystem"
-	ProjectGUID="{BF55FCC9-3FA0-4CD8-B68E-1078AD40BA2C}"
-	RootNamespace="LogSystem"
+	Name="Window"
+	ProjectGUID="{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}"
+	RootNamespace="Window"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Core/Inc"
+				AdditionalIncludeDirectories="../core/inc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -180,11 +180,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\THArchive.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\THFileManagerWindows.cpp"
+				RelativePath=".\Window.cpp"
 				>
 			</File>
 		</Filter>
@@ -194,23 +190,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\THArchive.h"
-				>
-			</File>
-			<File
-				RelativePath=".\THFileManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\THFileManagerWindows.h"
-				>
-			</File>
-			<File
-				RelativePath=".\THOutputDevice.h"
-				>
-			</File>
-			<File
-				RelativePath=".\THOutputDeviceFile.h"
+				RelativePath=".\Window.h"
 				>
 			</File>
 		</Filter>

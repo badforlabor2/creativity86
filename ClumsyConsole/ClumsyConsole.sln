@@ -5,6 +5,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleDll", "ConsoleDll\Co
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogSystem", "LogSystem\LogSystem.vcproj", "{BF55FCC9-3FA0-4CD8-B68E-1078AD40BA2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Window", "Window\Window.vcproj", "{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcproj", "{92EAE90D-F95D-4E60-BEC4-14AF82ACE1B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +23,14 @@ Global
 		{BF55FCC9-3FA0-4CD8-B68E-1078AD40BA2C}.Debug|Win32.Build.0 = Debug|Win32
 		{BF55FCC9-3FA0-4CD8-B68E-1078AD40BA2C}.Release|Win32.ActiveCfg = Release|Win32
 		{BF55FCC9-3FA0-4CD8-B68E-1078AD40BA2C}.Release|Win32.Build.0 = Release|Win32
+		{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}.Debug|Win32.Build.0 = Debug|Win32
+		{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}.Release|Win32.ActiveCfg = Release|Win32
+		{736D767C-EB0D-47EF-A9C2-CDE8257AA0E5}.Release|Win32.Build.0 = Release|Win32
+		{92EAE90D-F95D-4E60-BEC4-14AF82ACE1B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{92EAE90D-F95D-4E60-BEC4-14AF82ACE1B7}.Debug|Win32.Build.0 = Debug|Win32
+		{92EAE90D-F95D-4E60-BEC4-14AF82ACE1B7}.Release|Win32.ActiveCfg = Release|Win32
+		{92EAE90D-F95D-4E60-BEC4-14AF82ACE1B7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
