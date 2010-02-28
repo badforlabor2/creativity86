@@ -12,6 +12,11 @@
 #include <time.h>
 using namespace std;
 
+//去除一些警告提示
+#pragma warning(diable : 4996)
+#pragma warning(diable : 4244)
+
+
 // Undo any Windows defines.
 #undef BYTE
 #undef WORD
@@ -28,6 +33,7 @@ typedef unsigned long		DWORD;		// 32-bit unsigned.
 typedef int					INT;
 typedef float				FLOAT;
 typedef int					BOOL;
+
 //不是定义完之后你就不可以用unsigned char了，可以继续用，只是BYTE不是windows的了，而是自己的
 
 // Character types.
@@ -39,6 +45,10 @@ typedef wchar_t				TCHAR;
 
 
 //定义一些功能函数
+#ifndef THCheck
+#define THCheck(expr) {/*如果调试就Assert，否则就打印出日志*/}
+#endif
+
 #ifndef ARRAY_COUNT
 	#define ARRAY_COUNT( array ) \
 		( sizeof(array) / sizeof((array)[0]) )

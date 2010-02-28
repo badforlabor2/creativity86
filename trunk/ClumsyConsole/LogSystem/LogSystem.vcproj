@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="../Core/Inc"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -193,10 +194,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\platform.h"
-				>
-			</File>
-			<File
 				RelativePath=".\THArchive.h"
 				>
 			</File>
@@ -214,10 +211,6 @@
 			</File>
 			<File
 				RelativePath=".\THOutputDeviceFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\THWin32.h"
 				>
 			</File>
 		</Filter>
