@@ -1,0 +1,174 @@
+
+//定义FunctionBase的子类，以满足Unreal类型的SubscribeEvent函数
+//cpp 
+class UWindowObject : public UObject
+{
+	public:
+		Window* window;
+};
+
+
+//UnrealWindow
+//unreal script
+class UnrealWindow extends Object
+{
+cpptext
+{
+	InitWindow()
+	{
+		check(window);
+		if(window)
+		{
+			window->subscribeEvent(Window::EventClick, 
+				UnrealSubscriber(&UnrealWindow::delegateFunction, this));
+		}
+	}
+	DestroyWindow()
+	{
+		check(window);
+		if(window)
+		{		
+			window->unsubscribeEvent(Window::EventClick, 
+				UnrealSubscriber(&UnrealWindow::delegateFunction, this));
+		}
+	}
+}
+
+	
+	//native:
+	setText(string str);
+	SetArea(UDim area);
+	AddToParent(UnrealWindow parent);
+	
+	//to autoinit self by sWindowName;
+	function InitWindow()
+	{
+		Controller.GetWindow(self, sWindowName);
+	}
+	
+	var private WindowObject	window;
+	var() localized string 			sWindowName;
+};
+
+
+class GUIExecScript extends UIObject
+{
+	var array<UnrealWindow>		controls;
+	
+	InitComponent();
+	{
+		foreach control in Controls;
+			control.InitWindow();
+	}	
+	
+	OnClose()
+	{
+		foreach control in controls
+			control.DestroyWindow();
+	}
+};
+
+class GUIPanel1 extends GUIExecScript
+{
+	var UnrealWindow		lblName;
+	var UnrealWindow		edtName, btnOK;
+	function InitComponent()
+	{
+		super.InitComponent();
+		
+		btnOK = Controller.GetWindow("123");
+		edtName = Controller.GetName("1234");
+		
+		btnOk.OnClick = OnClickOK;
+	}
+	function OnClickOK()
+	{
+		log("123");
+	}
+
+};
+class GUIPanel2 extends GUIExecScript
+{
+	var UnrealWindow		edtName, btnOK;
+	
+	function InitComponent()
+	{
+		super.InitComponent();
+		btnOk.OnClick = OnClickOK;
+	}
+	function OnClickOK()
+	{
+		log("123");
+	}
+
+	Define UnrealWindow Object btnOK
+		sWindowName="123"
+	EndDefine
+	
+	Define UnrealWindow Object edtName
+		sWindowName="123"
+	EndDefine
+	
+};
+
+class GUIPage extends GUIExecScripts
+{
+	var UnrealWindow		RootWindow;
+	function OnOpen()
+	{
+		
+	}
+	
+	function InitComponent()
+	{
+		super.InitComponent();
+		Controller.GetWindow(RootWindow, PageName);
+		RootWindow.SetVisible(true);
+	}
+	
+	var localized string		PageName;
+
+default
+{
+	PageName="mat2_LoadingPage/root"
+}
+};
+
+
+class CEGUIController extends BaseGUIController
+{
+	//native:
+	function GetWindow(UnrealWindow* ret, string str)
+	{
+		Window* wnd = GetCEGUIWindow(str);
+		UClass* cls = StaticLoadObject(str->getUnrealClass(), ...);
+		if(ret == NULL)
+		{
+			ret = StaticConstructObject(cls);
+		}
+		UWindowObject* obj = new UWindowObject;
+		obj->window = wnd;
+		ret->window = obj;
+		ret->InitWindow();		
+	}
+	UnrealWindow CloneWindow(UnrealWindow un, string str)
+	{
+		CEGUI::Clone(un->window, str);
+		return GetWindow(str+m->window->getName());
+	}
+	
+	//script
+	function OpenGUIPage(string str)
+	{
+		UClass cls = DynamicLoadObject(str, class'class');
+		UCEGUIPage page = new cls;
+		page.InitComponent();
+		page.OnOpen();
+	}
+	function CloseGUIPage(GUIPage page)
+	{
+		page.OnClose();
+	}
+}
+
+
