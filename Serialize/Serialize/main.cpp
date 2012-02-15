@@ -48,9 +48,49 @@ UClass Player::PrivateStaticClass("Player", sizeof(Player), Player::ConstructObj
 
 int main()
 {
-	for(std::vector<UClass *>::size_type i=0; i<g_NativeClass.size(); i++){
-		std::cout<<g_NativeClass[i]->name.data()<<std::endl;	
-	}
+	//for(std::vector<UClass *>::size_type i=0; i<g_NativeClass.size(); i++){
+	//	std::cout<<g_NativeClass[i]->name.data()<<std::endl;	
+	//}
 
+#if 0
+	int a = 1;
+	float b = 2.0f;
+	MyString str("1234");
+
+	ArchivesWrite writer("c:\\test1.txt");
+	writer<<a<<b<<str;
+	writer.flush();
+
+
+	int aa = 0;
+	float bb = 0.f;
+	MyString str2;
+	ArchivesReader reader("c:\\test1.txt");
+	reader<<aa<<bb<<str2;
+	reader.flush();
+	std::cout<<"\n------"<<aa<<" "<<bb<<" "<<str2.GetPtr()<<std::endl;
+
+#else
+
+	int a = 1;
+	float b = 2.0f;
+	MyString str("1234");
+
+	MemoryWriter writer;
+	writer<<a<<b<<str;
+	writer.flush();
+
+
+	int aa = 0;
+	float bb = 0.f;
+	MyString str2;
+	MemoryReader reader(writer.GetMyMem());
+	reader<<aa<<bb<<str2;
+	reader.flush();
+	std::cout<<"\n------"<<aa<<" "<<bb<<" "<<str2.GetPtr()<<std::endl;
+
+#endif
+
+	system("pause");
 	return 0;
 }
