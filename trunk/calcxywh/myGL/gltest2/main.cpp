@@ -7,6 +7,28 @@
 #include <stdlib.h>
 #include <GL/freeglut.h>
 
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+GLbyte *gltLoadTGA(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, GLenum *eFormat);
+#pragma pack(1)
+typedef struct
+{
+	GLbyte	identsize;              // Size of ID field that follows header (0)
+	GLbyte	colorMapType;           // 0 = None, 1 = paletted
+	GLbyte	imageType;              // 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle
+	unsigned short	colorMapStart;          // First colour map entry
+	unsigned short	colorMapLength;         // Number of colors
+	unsigned char 	colorMapBits;   // bits per palette entry
+	unsigned short	xstart;                 // image x origin
+	unsigned short	ystart;                 // image y origin
+	unsigned short	width;                  // width in pixels
+	unsigned short	height;                 // height in pixels
+	GLbyte	bits;                   // bits per pixel (8 16, 24, 32)
+	GLbyte	descriptor;             // image descriptor
+} TGAHEADER;
+#pragma pack(8)
+
 /*
 	RenderCube1和RenderCube2相当于在原点绘制图形，然后再做移动、旋转等操作。
 */
@@ -49,7 +71,25 @@ void RenderCube2()
 
 void RenderTexture()
 {
+	//glShadeModel(GL_FLAT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
+	glColor3ub(255, 255, 255);
+	glBegin(GL_TRIANGLES);
+
+		glNormal3f(0, 0, 1);
+		glTexCoord2f(0, 0);
+		glVertex3d(0, 50, -50);
+
+		//glColor3ub(0, 255, 0);
+		glTexCoord2f(0, 1);
+		glVertex3d(-50, 0, -50);
+
+		//glColor3ub(0, 0, 255);
+		glTexCoord2f(1, 1);
+		glVertex3d(50, 0, -50);
+			
+	glEnd();
 }
 
 void RenderScene()
@@ -68,9 +108,9 @@ void SetRenderCondition()
 	glClearColor(0, 0, 0, 1);
 
 
-	glEnable(GL_LIGHTING);
-	float ambientLight[] = {1, 0, 0, 1};
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+	//glEnable(GL_LIGHTING);
+	//float ambientLight[] = {1, 0, 0, 1};
+	//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
 
 #if light0
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
@@ -79,8 +119,19 @@ void SetRenderCondition()
 	glEnable(GL_LIGHT0);
 #endif
 
-	//gltLoadTGA();
+	int width, height, component;
+	GLenum format;
+	GLbyte* pbuffer = gltLoadTGA("stone.tga", &width, &height, &component, &format);
+	glTexImage2D(GL_TEXTURE_2D, 0, component, width, height, 
+			0, format, GL_UNSIGNED_BYTE, pbuffer);
+	free(pbuffer);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glEnable(GL_TEXTURE_2D);
 }
 
 // 执行glOrtho或者glFrustum的目的是改变投影矩阵
@@ -161,3 +212,91 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+
+GLbyte *gltLoadTGA(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, GLenum *eFormat)
+{
+	FILE *pFile;			// File pointer
+	TGAHEADER tgaHeader;		// TGA file header
+	unsigned long lImageSize;		// Size in bytes of image
+	short sDepth;			// Pixel depth;
+	GLbyte	*pBits = NULL;          // Pointer to bits
+
+	// Default/Failed values
+	*iWidth = 0;
+	*iHeight = 0;
+	*eFormat = GL_BGR_EXT;
+	*iComponents = GL_RGB8;
+
+	// Attempt to open the file
+	pFile = fopen(szFileName, "rb");
+	if(pFile == NULL)
+		return NULL;
+
+	// Read in header (binary)
+	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
+
+	// Do byte swap for big vs little endian
+#ifdef __APPLE__
+	LITTLE_ENDIAN_WORD(&tgaHeader.colorMapStart);
+	LITTLE_ENDIAN_WORD(&tgaHeader.colorMapLength);
+	LITTLE_ENDIAN_WORD(&tgaHeader.xstart);
+	LITTLE_ENDIAN_WORD(&tgaHeader.ystart);
+	LITTLE_ENDIAN_WORD(&tgaHeader.width);
+	LITTLE_ENDIAN_WORD(&tgaHeader.height);
+#endif
+
+
+	// Get width, height, and depth of texture
+	*iWidth = tgaHeader.width;
+	*iHeight = tgaHeader.height;
+	sDepth = tgaHeader.bits / 8;
+
+	// Put some validity checks here. Very simply, I only understand
+	// or care about 8, 24, or 32 bit targa's.
+	if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
+		return NULL;
+
+	// Calculate size of image buffer
+	lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
+
+	// Allocate memory and check for success
+	pBits = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
+	if(pBits == NULL)
+		return NULL;
+
+	// Read in the bits
+	// Check for read error. This should catch RLE or other 
+	// weird formats that I don't want to recognize
+	if(fread(pBits, lImageSize, 1, pFile) != 1)
+	{
+		free(pBits);
+		return NULL;
+	}
+
+	// Set OpenGL format expected
+	switch(sDepth)
+	{
+	case 3:     // Most likely case
+		*eFormat = GL_BGR_EXT;
+		*iComponents = GL_RGB8;
+		break;
+	case 4:
+		*eFormat = GL_BGRA_EXT;
+		*iComponents = GL_RGBA8;
+		break;
+	case 1:
+		*eFormat = GL_LUMINANCE;
+		*iComponents = GL_LUMINANCE8;
+		break;
+	};
+
+
+	// Done with File
+	fclose(pFile);
+
+	// Return pointer to image data
+	return pBits;
+}
+
+
