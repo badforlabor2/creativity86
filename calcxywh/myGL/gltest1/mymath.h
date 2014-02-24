@@ -8,6 +8,12 @@
 
 #define PI 3.14159265358979323846
 
+inline float TransAngle(float angle)
+{
+	angle = angle / 180 * PI;
+	return angle;
+}
+
 class FMatrix
 {
 public:
@@ -151,6 +157,17 @@ public:
 	FTranslationMatrix(float x, float y, float z)
 	{
 		M[12] = x; M[13] = y; M[14] = z; M[15] = 1;
+	}
+};
+// Àı∑≈æÿ’Û
+class FScaleMatrix : public FMatrix
+{
+public:
+	FScaleMatrix(float xscale=1, float yscale=1, float zscale=1)
+	{
+		M[0] = xscale;
+						M[5] = yscale;
+										M[10] = zscale;
 	}
 };
 

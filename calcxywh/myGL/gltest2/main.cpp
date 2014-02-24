@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <GL/freeglut.h>
 
-#include "mymath.h"
-
 /*
 	RenderCube1和RenderCube2相当于在原点绘制图形，然后再做移动、旋转等操作。
 */
@@ -23,88 +21,44 @@ void RenderCube1()
 	glRotatef(30, 0, 0, 1);
 	glutWireCube(25);
 }
+
 void RenderCube2()
 {
-	// 同样的立方体，先旋转，在平移
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glShadeModel(GL_FLAT);
 
-	glColor3f(0, 1, 0);
-	glRotatef(30, 0, 0, 1);
-	glTranslatef(0, 60, 0);
-	glScalef(0.5, 1, 1);
-	glutWireCube(25);
+	float gray[] = {0.5f, 0.75f, 0.75f, 1};
+#if 1
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, gray);
+#else
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glColor4fv(gray);
+#endif
+	glBegin(GL_TRIANGLES);
+		glNormal3f(0, 0, 1);
+		//glColor3ub(255, 0, 0);
+		glVertex3d(0, 50, -50);
+
+		//glColor3ub(0, 255, 0);
+		glVertex3d(-50, 0, -50);
+
+		//glColor3ub(0, 0, 255);
+		glVertex3d(50, 0, -50);
+	glEnd();
 }
 
-void RenderCube3()
+void RenderTexture()
 {
-	// 使用矩阵操作，绘制立方体，先平移，在旋转
-	FMatrix matrix;
-	FTranslationMatrix trans(0, 60, 0);
-	FRotateMatrix rota(25, 0, 0, 1);
-	matrix *= trans;
-	matrix *= rota;
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(matrix.M);
-	glColor3f(0, 0, 1);
-	glutWireCube(25);
-}
-void RenderCube4()
-{
-	// 使用矩阵操作，绘制立方体，先旋转，再平移
-	FMatrix matrix;
-	FTranslationMatrix trans(0, 60, 0);
-	FRotateMatrix rota(30, 0, 0, 1);
-	//FScaleMatrix scale(0.5, 1, 1);
-	FScaleMatrix scale(1, 0.5);
-	matrix *= rota;
-	matrix *= trans;
-	matrix *= scale;
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(matrix.M);
-	/*
-		glMultMatrixf的例子:
-		glLoadIdentity();
-		glMultMatrixf(rota.M);
-		glMultMatrixf(trans.M);
-	*/ 
-	glColor3f(0, 1, 1);
-	glutWireCube(25);
 }
 
-
-void RenderCube5()
-{
-	/*
-		对立方体的所有点一次做平移和旋转，然后再绘制这些点！
-		即对每一个点都执行矩阵变换
-	*/
-}
-void RenderCube6()
-{
-	// 立方体，先平移在旋转
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glColor3f(1.f, 0, 0);
-	glTranslatef(0, 60, 0);
-	glTranslatef(0, 0, -100);
-	glRotatef(30, 0, 0, 1);
-	glutWireCube(25);
-}
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	RenderCube1();
-	//RenderCube3();
-
+	//RenderCube1();
 	//RenderCube2();
-	//RenderCube4();
-
-	//RenderCube6();
+	RenderTexture();
 
 	glFlush();
 }
@@ -112,6 +66,21 @@ void RenderScene()
 void SetRenderCondition()
 {
 	glClearColor(0, 0, 0, 1);
+
+
+	glEnable(GL_LIGHTING);
+	float ambientLight[] = {1, 0, 0, 1};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);
+
+#if light0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, ambientLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, ambientLight);
+	glEnable(GL_LIGHT0);
+#endif
+
+	//gltLoadTGA();
+
 }
 
 // 执行glOrtho或者glFrustum的目的是改变投影矩阵
