@@ -32,6 +32,7 @@ void RenderCube2()
 	glColor3f(0, 1, 0);
 	glRotatef(30, 0, 0, 1);
 	glTranslatef(0, 60, 0);
+	glScalef(0.5, 1, 1);
 	glutWireCube(25);
 }
 
@@ -55,8 +56,11 @@ void RenderCube4()
 	FMatrix matrix;
 	FTranslationMatrix trans(0, 60, 0);
 	FRotateMatrix rota(30, 0, 0, 1);
+	//FScaleMatrix scale(0.5, 1, 1);
+	FScaleMatrix scale(1, 0.5);
 	matrix *= rota;
 	matrix *= trans;
+	matrix *= scale;
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(matrix.M);
@@ -78,14 +82,29 @@ void RenderCube5()
 		即对每一个点都执行矩阵变换
 	*/
 }
+void RenderCube6()
+{
+	// 立方体，先平移在旋转
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glColor3f(1.f, 0, 0);
+	glTranslatef(0, 60, 0);
+	glTranslatef(0, 0, -100);
+	glRotatef(30, 0, 0, 1);
+	glutWireCube(25);
+}
 void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//RenderCube1();
-	RenderCube2();
+	RenderCube1();
 	//RenderCube3();
-	RenderCube4();
+
+	//RenderCube2();
+	//RenderCube4();
+
+	//RenderCube6();
 
 	glFlush();
 }
@@ -94,6 +113,41 @@ void SetRenderCondition()
 {
 	glClearColor(0, 0, 0, 1);
 }
+
+// 执行glOrtho或者glFrustum的目的是改变投影矩阵
+// 如果不使用opengl提供的接口，可以自己变换投影矩阵
+void OrthoView(float w, float h)
+{
+	float ratio = 1.0f * w / h;
+	if(w < h)
+		glOrtho(-100, 100, -100 / ratio, 100/ratio, 100, -100);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
+	else
+		glOrtho(-100*ratio, 100*ratio, -100, 100, 100, -100);
+}
+void FrustumView(float w, float h)
+{
+	/*
+		znear 表示z轴上，基准点到原点的距离，如果znear==10, 那么说明是znear的基准点是(0,0,-10)
+		gluPerspective的参数是：fov, w/h, znear, zfar.
+		glFrustum的参数是 近裁剪面的宽度*0.5（正负值两个），近裁剪面的高度*0.5（正负值两个），znear, zfar
+			和glOrtho的参数类似。只不过一个是从原点看Z轴方向(glFrustum)，一个是从原点看四周(glOrtho)
+	*/
+
+	const static float FOV = 60;
+	const static float ZNear = 1;
+	const static float ZFar = 400;
+#if 1
+	gluPerspective(FOV, w/h, ZNear, ZFar);
+#else
+	float near_size = 0;
+	near_size = tan(TransAngle(FOV)/2) * ZNear;
+	float ratio = 1.0f * w / h;
+	if(w < h)
+		glFrustum(-near_size, near_size, -near_size / ratio, near_size/ratio, ZNear, ZFar);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
+	else
+		glFrustum(-near_size*ratio, near_size*ratio, -near_size, near_size, ZNear, ZFar);
+#endif
+}
 void OnWindowSized(GLsizei w, GLsizei h)
 {
 	if(w == 0 || h == 0)
@@ -101,29 +155,26 @@ void OnWindowSized(GLsizei w, GLsizei h)
 
 	glViewport(0, 0, w, h);
 
+	// 执行glOrtho或者glFrustum的目的是改变投影矩阵
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
+	OrthoView(w, h);
+	//FrustumView(w, h);
 	/* 
 	// 加入w是200，h是400，如果做如下设置，那么会看到视角被压瘪了
 	glOrtho(-100, 100, -100, 100, 1, -1);
 	// 所以得做一下转化，才能让视角看起来是正常的（没有压瘪）
 	*/
-	float ratio = 1.0f * w / h;
-	if(w < h)
-		glOrtho(-100, 100, -100 / ratio, 100/ratio, 100, -100);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
-	else
-		glOrtho(-100*ratio, 100*ratio, -100, 100, 100, -100);
+	//float ratio = 1.0f * w / h;
+	//if(w < h)
+	//	glOrtho(-100, 100, -100 / ratio, 100/ratio, 100, -100);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
+	//else
+	//	glOrtho(-100*ratio, 100*ratio, -100, 100, 100, -100);
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
 }
 int main(int argc, char** argv)
 {
-	float a;
-	a = sin(PI/2);
-	a = tan(PI/4);
-
-
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE|GLUT_RGBA);
 	//glutInitWindowPosition( 100, 100 );
