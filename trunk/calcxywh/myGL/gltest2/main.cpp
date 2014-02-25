@@ -69,12 +69,30 @@ void RenderCube2()
 	glEnd();
 }
 
+void SetTexture()
+{
+
+	int width, height, component;
+	GLenum format;
+	GLbyte* pbuffer = gltLoadTGA("stone.tga", &width, &height, &component, &format);
+	glTexImage2D(GL_TEXTURE_2D, 0, component, width, height, 
+		0, format, GL_UNSIGNED_BYTE, pbuffer);
+	free(pbuffer);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	//调用这个之后，就支持了glColor，让贴图颜色和绘制颜色相混合
+	glEnable(GL_TEXTURE_2D);
+}
 void RenderTexture()
 {
 	//glShadeModel(GL_FLAT);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glColor3ub(255, 255, 255);
+	glColor3ub(255, 255, 0);
+	// glColor3ub(255, 255, 0);
 	glBegin(GL_TRIANGLES);
 
 		glNormal3f(0, 0, 1);
@@ -91,6 +109,66 @@ void RenderTexture()
 			
 	glEnd();
 }
+static const size_t CONS_TEXTURE_CNT = 2;
+GLuint Textures[CONS_TEXTURE_CNT] = {0};
+static const char* const Images[CONS_TEXTURE_CNT] = {"stone.tga", "wood.tga"};
+void SetTexture2()
+{
+
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(CONS_TEXTURE_CNT, Textures);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);	//调用这个之后，就支持了glColor，让贴图颜色和绘制颜色相混合
+
+	for(size_t i=0; i<CONS_TEXTURE_CNT; i++)
+	{	
+		bool istex = glIsTexture(Textures[i]) > 0;
+		glBindTexture(GL_TEXTURE_2D, Textures[i]);
+
+		int width, height, component;
+		GLenum format;
+		GLbyte* pbuffer = gltLoadTGA(Images[i], &width, &height, &component, &format);
+		glTexImage2D(GL_TEXTURE_2D, 0, component, width, height, 
+			0, format, GL_UNSIGNED_BYTE, pbuffer);
+		free(pbuffer);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		
+		// mipmap相关的
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		//gluBuild2DMipmaps();
+	}
+}
+void RenderTexture2()
+{
+	//glBindTexture(GL_TEXTURE_2D, Textures[0]);
+	glBindTexture(GL_TEXTURE_2D, Textures[1]);
+	//glShadeModel(GL_FLAT);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glColor3ub(255, 255, 0);
+	// glColor3ub(255, 255, 0);
+	glBegin(GL_TRIANGLES);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0, 0);
+	glVertex3d(0, 50, -50);
+
+	//glColor3ub(0, 255, 0);
+	glTexCoord2f(0, 1);
+	glVertex3d(-50, 0, -50);
+
+	//glColor3ub(0, 0, 255);
+	glTexCoord2f(1, 1);
+	glVertex3d(50, 0, -50);
+
+	glEnd();
+}
+
+
 
 void RenderScene()
 {
@@ -98,7 +176,7 @@ void RenderScene()
 
 	//RenderCube1();
 	//RenderCube2();
-	RenderTexture();
+	RenderTexture2();
 
 	glFlush();
 }
@@ -118,20 +196,8 @@ void SetRenderCondition()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, ambientLight);
 	glEnable(GL_LIGHT0);
 #endif
+	SetTexture2();
 
-	int width, height, component;
-	GLenum format;
-	GLbyte* pbuffer = gltLoadTGA("stone.tga", &width, &height, &component, &format);
-	glTexImage2D(GL_TEXTURE_2D, 0, component, width, height, 
-			0, format, GL_UNSIGNED_BYTE, pbuffer);
-	free(pbuffer);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glEnable(GL_TEXTURE_2D);
 }
 
 // 执行glOrtho或者glFrustum的目的是改变投影矩阵
