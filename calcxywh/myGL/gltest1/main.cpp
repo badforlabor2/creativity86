@@ -82,6 +82,7 @@ void RenderCube5()
 		即对每一个点都执行矩阵变换
 	*/
 }
+
 void RenderCube6()
 {
 	// 立方体，先平移在旋转
@@ -91,6 +92,17 @@ void RenderCube6()
 	glColor3f(1.f, 0, 0);
 	glTranslatef(0, 60, 0);
 	glTranslatef(0, 0, -100);
+	glRotatef(30, 0, 0, 1);
+	glutWireCube(25);
+}
+void RenderCube7()
+{
+	// 立方体，先平移在旋转
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glColor3f(1.f, 0, 0);
+	glTranslatef(0, 60, 0);
 	glRotatef(30, 0, 0, 1);
 	glutWireCube(25);
 }
@@ -119,10 +131,23 @@ void SetRenderCondition()
 void OrthoView(float w, float h)
 {
 	float ratio = 1.0f * w / h;
+#if 0
 	if(w < h)
-		glOrtho(-100, 100, -100 / ratio, 100/ratio, 100, -100);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
+		glOrtho(-100, 100, -100 / ratio, 100/ratio, 0, -200);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
 	else
-		glOrtho(-100*ratio, 100*ratio, -100, 100, 100, -100);
+		glOrtho(-100*ratio, 100*ratio, -100, 100, 0, -200);
+#else
+	if(w < h)
+	{
+		FOrthoMatrix ortho(-100, 100, 100/ratio, -100/ratio, 0, -200);
+		glMultMatrixf(ortho.M);
+	}
+	else
+	{
+		FOrthoMatrix ortho(-100*ratio, 100*ratio, 100, -100, 0, -200);
+		glMultMatrixf(ortho.M);
+	}
+#endif
 }
 void FrustumView(float w, float h)
 {
@@ -170,8 +195,8 @@ void OnWindowSized(GLsizei w, GLsizei h)
 	//	glOrtho(-100, 100, -100 / ratio, 100/ratio, 100, -100);	// w<h, 所以当(right-left)<(top-bottom)时才会看起来正常
 	//else
 	//	glOrtho(-100*ratio, 100*ratio, -100, 100, 100, -100);
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 int main(int argc, char** argv)
 {
