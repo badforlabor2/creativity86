@@ -170,5 +170,71 @@ public:
 										M[10] = zscale;
 	}
 };
+// 投影矩阵
+/*
+	2D的：
+		x轴：	|1 0|
+				|0 0|
+		y轴：	|0 1|
+				|0 0|
+	3D的
+		xy平面	|1 0 0|
+				|0 1 0|
+				|0 0 0|
+		yz平面	|0 0 0|
+				|0 1 0|
+				|0 0 1|
+		xz平面	|1 0 0|
+				|0 0 0|
+				|0 0 1|
+	向任意直线或者平面投影（直线和平面都是经过原点的）
+*/
+class FOrthoMatrixXY : public FMatrix
+{
+public:
+	FOrthoMatrixXY()
+	{
+		M[0] = 1;
+		M[5] = 1;
+		M[10] = 0;
+	}
+};
+// 正交投影
+class FOrthoMatrix : public FMatrix
+{
+public:
+	FOrthoMatrix(float nNear, float nFar, float width, float height)
+	{
+	
+	}
+	FOrthoMatrix(float l, float r, float t, float b, float n, float f)
+	{
+		// 先投影到CCV上
+		// 再进行透视除法？
+		// 如何投影到CCV上？先做Z轴投影，再做X、Y轴投影
+		/*
+			Z轴投影：
+				|1 0 0 0|
+				|0 1 0 0|
+				|0 0 2/(n-f) (n+f)/(n-f)|
+				|0 0 0 1|
+			X轴投影：
+				|2/(r-l) 0 0 -((r+l)/(r-l))|
+				|0 1 0 0|
+				|0 0 1 0|
+				|0 0 0 1|
+			Y轴投影：
+				|1 0 0 0|
+				|0 2/(t-b) 0 -((t+b)/(t-b))|
+				|0 0 1 0|
+				|0 0 0 1|		
+		*/
+		M[0] = 2/(r-l); M[4] = 0;		M[8] = 0;			M[12] = -((r+l)/(r-l));
+		M[1] = 0;		M[5] = 2/(t-b);	M[9] = 0;			M[13] = -((t+b)/(t-b));
+		M[2] = 0;		M[6] = 0;		M[10] = 2/(n-f);	M[14] = +(n+f)/(n-f);
+		M[3] = 0;		M[7] = 0;		M[11] = 0;			M[15] = 1;
+	}
+};
+
 
 #endif
