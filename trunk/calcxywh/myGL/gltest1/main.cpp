@@ -12,6 +12,18 @@
 /*
 	RenderCube1和RenderCube2相当于在原点绘制图形，然后再做移动、旋转等操作。
 */
+
+void RenderCube11()
+{
+	// 立方体，先平移在旋转
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glColor3f(1.f, 0, 0);
+	glTranslatef(0, 60, -200);
+	glRotatef(30, 0, 0, 1);
+	glutWireCube(25);
+}
 void RenderCube1()
 {
 	// 立方体，先平移在旋转
@@ -110,7 +122,8 @@ void RenderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	RenderCube1();
+	RenderCube11();
+	//RenderCube1();
 	//RenderCube3();
 
 	//RenderCube2();
@@ -162,7 +175,22 @@ void FrustumView(float w, float h)
 	const static float ZNear = 1;
 	const static float ZFar = 400;
 #if 1
+#if 0
 	gluPerspective(FOV, w/h, ZNear, ZFar);
+#else
+
+#if 0
+	float near_size = 0;
+	near_size = tan(TransAngle(FOV/2)) * ZNear;
+	float ratio = 1.0f * w / h;
+	FPerspectiveMatrix perspective(-near_size*ratio, near_size*ratio, -near_size, near_size, ZNear, ZFar);
+	//FPerspectiveMatrix perspective(-near_size, near_size, -near_size / ratio, near_size/ratio, ZNear, ZFar);
+	glMultMatrixf(perspective.M);
+#else
+	FPerspectiveMatrix perspective(FOV, w/h, ZNear, ZFar);
+	glMultMatrixf(perspective.M);
+#endif
+#endif
 #else
 	float near_size = 0;
 	near_size = tan(TransAngle(FOV)/2) * ZNear;
@@ -183,8 +211,8 @@ void OnWindowSized(GLsizei w, GLsizei h)
 	// 执行glOrtho或者glFrustum的目的是改变投影矩阵
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	OrthoView(w, h);
-	//FrustumView(w, h);
+	//OrthoView(w, h);
+	FrustumView(w, h);
 	/* 
 	// 加入w是200，h是400，如果做如下设置，那么会看到视角被压瘪了
 	glOrtho(-100, 100, -100, 100, 1, -1);

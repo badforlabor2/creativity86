@@ -236,5 +236,27 @@ public:
 	}
 };
 
+class FPerspectiveMatrix : public FMatrix
+{
+public:
+	FPerspectiveMatrix(float l, float r, float b, float t, float n, float f)
+	{
+		M[0] = 2*n/(r-l);		M[4] = 0;				M[8] = 0;					M[12] = 0;
+		M[1] = 0;				M[5] = 2*n/(t-b);		M[9] = 0;					M[13] = 0;
+		M[2] = 0;				M[6] = 0;				M[10] = -1*(f+n)/(f-n);		M[14] = -2*f*n/(f-n);
+		M[3] = 0;				M[7] = 0;				M[11] = -1;		M[15] = 0;
+	}
+	FPerspectiveMatrix(float fovy, float aspect, float n, float f)
+	{
+		// 这种特殊，是对称的，即r+l=0. b+t=0
+		fovy = TransAngle(fovy/2);
+		M[0] = 1/tan(fovy)/aspect;	M[4] = 0;			M[8] = 0;					M[12] = 0;
+		M[1] = 0;				M[5] = 1/tan(fovy);		M[9] = 0;					M[13] = 0;
+		M[2] = 0;				M[6] = 0;				M[10] = -1*(f+n)/(f-n);		M[14] = -2*f*n/(f-n);
+		M[3] = 0;				M[7] = 0;				M[11] = -1;					M[15] = 0;
+	}
+
+};
+
 
 #endif
